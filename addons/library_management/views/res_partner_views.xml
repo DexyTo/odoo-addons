@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_partner_library_form" model="ir.ui.view">
+        <field name="name">res.partner.library.form.inherit</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Библиотека" invisible="not is_library_member">
+                    <group>
+                        <field name="borrowed_books_count"/>
+                    </group>
+                    <group string="Заимствованные книги">
+                        <field name="borrowed_book_ids" nolabel="1">
+                            <list>
+                                <field name="name"/>
+                                <field name="isbn"/>
+                                <field name="author_ids" widget="many2many_tags"/>
+                            </list>
+                        </field>
+                    </group>
+                </page>
+            </xpath>
+            
+            <xpath expr="//field[@name='category_id']" position="after">
+                <field name="is_library_member"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_partner_library_search" model="ir.ui.view">
+        <field name="name">res.partner.library.search.inherit</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_res_partner_filter"/>
+        <field name="arch" type="xml">
+            <filter name="type_person" position="after">
+                <separator/>
+                <filter string="Читатели библиотеки" name="library_members" 
+                        domain="[('is_library_member', '=', True)]"/>
+            </filter>
+        </field>
+    </record>
+
+    <record id="action_library_members" model="ir.actions.act_window">
+        <field name="name">Читатели</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('is_library_member', '=', True)]</field>
+    </record>
+    
+</odoo>

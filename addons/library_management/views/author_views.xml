@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_library_author_list" model="ir.ui.view">
+        <field name="name">library.author.list</field>
+        <field name="model">library.author</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="birth_date"/>
+                <field name="book_count"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_library_author_search" model="ir.ui.view">
+        <field name="name">library.author.search</field>
+        <field name="model">library.author</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <group>
+                    <filter string="Birth Year" name="group_by_birth_year" context="{'group_by': 'birth_date:year'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_library_author_form" model="ir.ui.view">
+        <field name="name">library.author.form</field>
+        <field name="model">library.author</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="birth_date"/>
+                        </group>
+                        <group>
+                            <field name="book_count"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="biography"/>
+                    </group>
+                    <notebook>
+                        <page string="Книги">
+                            <field name="book_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="isbn"/>
+                                    <field name="publication_year"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_library_author" model="ir.actions.act_window">
+        <field name="name">Авторы</field>
+        <field name="res_model">library.author</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+</odoo>
