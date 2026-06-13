@@ -7,7 +7,6 @@
         <field name="arch" type="xml">
             <list>
                 <field name="name"/>
-                <field name="isbn"/>
                 <field name="publication_year"/>
                 <field name="pages"/>
                 <field name="age_years"/>
@@ -22,9 +21,8 @@
         <field name="arch" type="xml">
             <search>
                 <field name="name"/>
-                <field name="isbn"/>
                 <field name="author_ids"/>
-                <filter string="Многостраничные книги" name="large_books" domain="[('pages', '&gt;', 500)]"/>
+                <filter string="Многостраничные книги (от 500)" name="large_books" domain="[('pages', '&gt;', 500)]"/>
                 <group>
                     <filter string="Год выпуска" name="group_by_year" context="{'group_by': 'publication_year'}"/>
                     <filter string="Авторы" name="group_by_author" context="{'group_by': 'author_ids'}"/>
@@ -42,7 +40,6 @@
                     <group>
                         <group>
                             <field name="name"/>
-                            <field name="isbn"/>
                             <field name="publication_year"/>
                         </group>
                         <group>

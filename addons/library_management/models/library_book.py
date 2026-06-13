@@ -8,7 +8,6 @@ class LibraryBook(models.Model):
     _order = 'name'
 
     name = fields.Char(string='Название', required=True)
-    isbn = fields.Char(string='ISBN', required=True, copy=False)
     publication_year = fields.Integer(string='Год выпуска')
     pages = fields.Integer(string='Количество страниц')
     description = fields.Text(string='Описание')

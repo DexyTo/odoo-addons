@@ -2,32 +2,30 @@
 <odoo>
 
     <record id="view_partner_library_form" model="ir.ui.view">
-        <field name="name">res.partner.library.form.inherit</field>
-        <field name="model">res.partner</field>
-        <field name="inherit_id" ref="base.view_partner_form"/>
-        <field name="arch" type="xml">
-            <xpath expr="//notebook" position="inside">
-                <page string="Библиотека" invisible="not is_library_member">
-                    <group>
-                        <field name="borrowed_books_count"/>
-                    </group>
-                    <group string="Заимствованные книги">
-                        <field name="borrowed_book_ids" nolabel="1">
-                            <list>
-                                <field name="name"/>
-                                <field name="isbn"/>
-                                <field name="author_ids" widget="many2many_tags"/>
-                            </list>
-                        </field>
-                    </group>
-                </page>
-            </xpath>
-            
-            <xpath expr="//field[@name='category_id']" position="after">
-                <field name="is_library_member"/>
-            </xpath>
-        </field>
-    </record>
+      <field name="name">res.partner.library.form.inherit</field>
+      <field name="model">res.partner</field>
+      <field name="inherit_id" ref="base.view_partner_form"/>
+      <field name="arch" type="xml">
+          <xpath expr="//notebook" position="inside">
+              <page string="Библиотека" invisible="not is_library_member">
+                  <group>
+                      <field name="borrowed_books_count"/>
+                  </group>
+                  <separator string="Заимствованные книги"/>
+                  <field name="borrowed_book_ids" nolabel="1">
+                      <list>
+                          <field name="name"/>
+                          <field name="author_ids" widget="many2many_tags"/>
+                      </list>
+                  </field>
+              </page>
+          </xpath>
+          
+          <xpath expr="//field[@name='category_id']" position="after">
+              <field name="is_library_member"/>
+          </xpath>
+      </field>
+  </record>
 
     <record id="view_partner_library_search" model="ir.ui.view">
         <field name="name">res.partner.library.search.inherit</field>
