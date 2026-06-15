@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem id="menu_meeting_room_booking_root"
+              name="Бронирование переговорных"
+              sequence="10"
+              web_icon="meeting_room_booking,static/description/icon.png"/>
+
+    <menuitem id="menu_meeting_room_booking_bookings"
+              name="Бронирования"
+              parent="menu_meeting_room_booking_root"
+              action="action_room_booking"
+              sequence="10"/>
+
+    <menuitem id="menu_meeting_room_booking_rooms"
+              name="Переговорные"
+              parent="menu_meeting_room_booking_root"
+              action="action_meeting_room"
+              sequence="20"/>
+    
+    <menuitem id="menu_meeting_room_booking_locations"
+              name="Местоположения переговорных"
+              parent="menu_meeting_room_booking_root"
+              action="action_meeting_room_location"
+              sequence="30"/>
+
+</odoo>

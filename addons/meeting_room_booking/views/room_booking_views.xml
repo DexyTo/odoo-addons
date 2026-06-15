@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_room_booking_list" model="ir.ui.view">
+        <field name="name">room.booking.list</field>
+        <field name="model">room.booking</field>
+        <field name="arch" type="xml">
+            <list string="Бронирования комнат" 
+                  decoration-success="state == 'active'" 
+                  decoration-info="state == 'draft'"
+                  decoration-muted="state == 'cancelled'">
+                <field name="name"/>
+                <field name="room_id"/>
+                <field name="partner_id"/>
+                <field name="start_time"/>
+                <field name="end_time"/>
+                <field name="duration" widget="float_time"/>
+                <field name="state" widget="badge" 
+                       decoration-success="state == 'active'" 
+                       decoration-info="state == 'draft'"
+                       decoration-muted="state == 'cancelled'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_room_booking_form" model="ir.ui.view">
+        <field name="name">room.booking.form</field>
+        <field name="model">room.booking</field>
+        <field name="arch" type="xml">
+            <form string="Бронирование комнаты">
+                <header>
+                    <button name="action_confirm" 
+                            string="Подтвердить" 
+                            type="object" 
+                            class="oe_highlight"
+                            invisible="state != 'draft'"/>
+
+                    <button name="action_done" 
+                            string="Завершить" 
+                            type="object"
+                            invisible="state != 'active'"/>
+                    
+                    <button name="action_cancel" 
+                            string="Отменить" 
+                            type="object"
+                            invisible="state in ['done', 'cancelled']"/>
+                    
+                    <button name="action_draft" 
+                            string="Черновик" 
+                            type="object"
+                            invisible="state != 'cancelled'"/>
+
+                    <field name="state" widget="statusbar" statusbar_visible="draft,active,done,cancelled"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="room_id"/>
+                            <field name="partner_id"/>
+                        </group>
+                        <group>
+                            <field name="start_time"/>
+                            <field name="end_time"/>
+                            <field name="duration" widget="float_time"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="notes" placeholder="Комментарий..."/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_room_booking_calendar" model="ir.ui.view">
+        <field name="name">room.booking.calendar</field>
+        <field name="model">room.booking</field>
+        <field name="arch" type="xml">
+            <calendar string="Календарь бронирований" 
+                      date_start="start_time" 
+                      date_stop="end_time"
+                      color="room_id"
+                      mode="week">
+                <field name="name"/>
+                <field name="room_id"/>
+                <field name="partner_id"/>
+            </calendar>
+        </field>
+    </record>
+
+    <record id="action_room_booking" model="ir.actions.act_window">
+        <field name="name">Бронирование комнат</field>
+        <field name="res_model">room.booking</field>
+        <field name="view_mode">list,form,calendar</field>
+    </record>
+
+</odoo>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_meeting_room_location_list" model="ir.ui.view">
+        <field name="name">meeting.room.location.list</field>
+        <field name="model">meeting.room.location</field>
+        <field name="arch" type="xml">
+            <list string="Местоположения">
+                <field name="name"/>
+                <field name="floor"/>
+                <field name="section"/>
+                <field name="room_count" string="Переговорных"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_meeting_room_location_search" model="ir.ui.view">
+        <field name="name">meeting.room.location.search</field>
+        <field name="model">meeting.room.location</field>
+        <field name="arch" type="xml">
+            <search string="Поиск местоположений">
+                <field name="name" string="Местоположение"/>
+                <field name="section" string="Секция"/>
+                <field name="floor" string="Этаж"/>
+                
+                <group>
+                    <filter string="Этаж" name="group_floor" 
+                            context="{'group_by': 'floor'}"/>
+                    
+                    <filter string="Секция" name="group_section" 
+                            context="{'group_by': 'section'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_meeting_room_location_form" model="ir.ui.view">
+        <field name="name">meeting.room.location.form</field>
+        <field name="model">meeting.room.location</field>
+        <field name="arch" type="xml">
+            <form string="Местоположение">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="floor"/>
+                            <field name="section"/>
+                            <field name="name"/>
+                        </group>
+                        <group>
+                            <field name="room_count"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Переговорные" name="rooms">
+                            <field name="room_ids">
+                                <list delete="false">
+                                    <field name="name"/>
+                                    <field name="capacity"/>
+                                    <field name="active_bookings_count"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_meeting_room_location" model="ir.actions.act_window">
+        <field name="name">Местоположения</field>
+        <field name="res_model">meeting.room.location</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

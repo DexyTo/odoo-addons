@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_partner_form_inherit_booking" model="ir.ui.view">
+        <field name="name">res.partner.form.inherit.booking</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button class="oe_stat_button" type="object" name="action_view_bookings" icon="fa-calendar">
+                    <field string="Бронирования" name="booking_ids" widget="statinfo"/>
+                </button>
+            </xpath>
+            
+            <xpath expr="//notebook" position="inside">
+                <page string="Бронирование комнат" name="meeting_bookings">
+                    <group>
+                        <group>
+                            <field name="total_bookings_hours_week" widget="float_time"/>
+                            <field name="total_bookings_hours_month" widget="float_time"/>
+                        </group>
+                    </group>
+                    <field name="booking_ids">
+                        <list>
+                            <field name="name"/>
+                            <field name="room_id"/>
+                            <field name="start_time"/>
+                            <field name="end_time"/>
+                            <field name="duration" widget="float_time"/>
+                            <field name="state" widget="badge"
+                                   decoration-success="state == 'active'" 
+                                   decoration-info="state == 'draft'"
+                                   decoration-muted="state == 'cancelled'"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
