@@ -20,8 +20,10 @@ class RoomBooking(models.Model):
     ], string='Статус', default='draft', required=True, copy=False)
 
     room_id = fields.Many2one('meeting.room', string='Комната', required=True)
-    partner_id = fields.Many2one(
-        'res.partner', string='Организатор', required=True)
+    partner_id = fields.Many2one('res.partner',
+                                 string='Организатор',
+                                 required=True,
+                                 default=lambda self: self.env.user.partner_id)
 
     duration = fields.Float(
         compute='_compute_duration',

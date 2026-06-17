@@ -13,6 +13,7 @@
         * Ограничения на бронирование пользователями
     """,
     'data': [
+        'security/booking_security.xml',
         'security/ir.model.access.csv',
 
         'views/meeting_room_location_views.xml',
