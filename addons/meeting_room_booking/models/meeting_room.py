@@ -1,4 +1,4 @@
-from odoo import models, fields, api
+from odoo import models, fields, api, exceptions
 
 class MeetingRoom(models.Model):
     _name = 'meeting.room'
@@ -34,3 +34,9 @@ class MeetingRoom(models.Model):
             room.active_bookings_count = len(
                 room.booking_ids.filtered(lambda b: b.state == 'active')
             )
+
+    @api.constrains('capacity')
+    def _check_capacity_positive(self):
+        for room in self:
+            if room.capacity < 0:
+                raise exceptions.ValidationError("Вместимость не может быть отрицательной.")

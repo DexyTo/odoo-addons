@@ -9,20 +9,20 @@ class RoomBooking(models.Model):
 
     name = fields.Char(string='Цель брони', required=True)
     notes = fields.Text(string='Комментарий')
-    start_time = fields.Datetime(string='С', required=True)
-    end_time = fields.Datetime(string='По', required=True)
+    start_time = fields.Datetime(string='С', required=True, copy=False,
+                                 default=lambda self: fields.Datetime.now() + timedelta(minutes=15))
+    end_time = fields.Datetime(string='По', required=True, copy=False,
+                               default=lambda self: fields.Datetime.now() + timedelta(hours=1))
 
     state = fields.Selection([
         ('draft', 'Черновик'),
         ('active', 'Активно'),
         ('done', 'Завершено'),
         ('cancelled', 'Отменено'),
-    ], string='Статус', default='draft', required=True, copy=False)
+    ], string='Статус', required=True, copy=False, default='draft')
 
     room_id = fields.Many2one('meeting.room', string='Комната', required=True)
-    partner_id = fields.Many2one('res.partner',
-                                 string='Организатор',
-                                 required=True,
+    partner_id = fields.Many2one('res.partner', string='Организатор', required=True, copy=False,
                                  default=lambda self: self.env.user.partner_id)
 
     duration = fields.Float(
@@ -121,6 +121,14 @@ class RoomBooking(models.Model):
                     f"Превышен недельный лимит бронирования! "
                     f"Вы забронировали {total_hours:.1f} часов из 12 допустимых в эту неделю."
                 )
+
+    def copy(self, default=None):
+        if default is None:
+            default = {}
+
+        default['name'] = f"{self.name} (Копия)"
+
+        return super().copy(default)
 
     def action_confirm(self):
         for record in self:
