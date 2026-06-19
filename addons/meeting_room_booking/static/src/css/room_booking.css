@@ -1,0 +1,154 @@
+input:disabled,
+select:disabled,
+textarea:disabled {
+  background: #f8f9fa;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.o_booking_form {
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+}
+
+.o_booking_form .o_booking_header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding-inline: 15px;
+  border-radius: 8px 8px 0 0;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.o_booking_header button {
+  font-weight: 600;
+  border-radius: 6px;
+  padding: 8px 16px;
+  transition: all 0.3s ease;
+  border: none;
+  color: white;
+}
+
+.o_booking_header button:hover {
+  transform: translateY(-2px);
+}
+
+.o_booking_header button:active {
+  transform: scale(0.95);
+}
+
+.btn-confirm {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+}
+
+.btn-confirm:hover {
+  box-shadow: 0 4px 12px rgba(17, 153, 142, 0.4);
+}
+
+.btn-done {
+  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+}
+
+.btn-done:hover {
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+}
+
+.btn-cancel {
+  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+}
+
+.btn-cancel:hover {
+  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+}
+
+.btn-draft {
+  background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+}
+
+.btn-draft:hover {
+  box-shadow: 0 4px 12px rgba(149, 165, 166, 0.4);
+}
+
+.o_booking_statusbar {
+  background: white;
+  border-radius: 20px;
+  padding: 8px 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.o_booking_statusbar .o_arrow_button_current  {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.o_booking_sheet {
+  padding-block: 30px;
+  background: #ffffff;
+}
+
+.o_booking_sheet_name_field input {
+  font-size: 1.8rem;
+  font-weight: 600;
+  border-bottom: 3px solid #e9ecef;
+  transition: border-color 0.3s ease;
+}
+
+.o_booking_sheet_name_field input:focus {
+  border-bottom-color: #667eea;
+}
+
+.o_booking_main_group {
+  margin: 20px 0;
+}
+
+.o_booking_group_left {
+  border-left: 4px solid #667eea;
+}
+
+.o_booking_group_right {
+  border-left: 4px solid #11998e;
+  margin-left: 0;
+}
+
+.o_booking_group_field input:focus {
+  border-bottom-color: #667eea;
+}
+
+.o_booking_main_group .o_horizontal_separator {
+  font-size: 1.1rem;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.o_booking_time_group {
+  align-items: center;
+}
+
+.o_duration_field {
+  background: linear-gradient(135deg, #fff5e6 0%, #ffe8cc 100%);
+  padding-block: 10px;
+  border-radius: 8px;
+  font-weight: 700;
+  color: #f39c12;
+  text-align: center;
+}
+
+.o_booking_sheet .o_notes_field textarea {
+  font-size: 0.95rem;
+  min-height: 130px;
+  border-radius: 10px;
+  border: 2px solid #e9ecef;
+  padding: 15px;
+  transition: all 0.3s ease;
+}
+
+.o_notes_field textarea:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.o_booking_list tbody tr {
+  transition: all 0.3s ease;
+}
+
+.o_booking_list tbody tr:hover {
+  transform: translateX(5px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}

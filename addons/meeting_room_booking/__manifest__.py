@@ -24,6 +24,12 @@
 
         'data/ir_cron.xml',
     ],
+    'assets': {
+        'web.assets_backend': [
+            'meeting_room_booking/static/src/css/room_booking.css',
+            # 'meeting_room_booking/static/src/js/booking_form.js',
+        ],
+    },
     'application': True,
     'license': 'LGPL-3',
 } # type: ignore

@@ -5,20 +5,24 @@
         <field name="name">room.booking.list</field>
         <field name="model">room.booking</field>
         <field name="arch" type="xml">
-            <list string="Бронирования комнат" 
-                  decoration-success="state == 'active'" 
+            <list string="Бронирования комнат" class="o_booking_list" 
+                  decoration-success="state == 'active'"
+                  decoration-muted="state == 'cancelled'"
                   decoration-info="state == 'draft'"
-                  decoration-muted="state == 'cancelled'">
+                  decoration-bf="state == 'active'">
+
                 <field name="name"/>
                 <field name="room_id"/>
                 <field name="partner_id"/>
                 <field name="start_time"/>
                 <field name="end_time"/>
                 <field name="duration" widget="float_time"/>
+
                 <field name="state" widget="badge" 
-                       decoration-success="state == 'active'" 
+                       decoration-success="state == 'active'"
                        decoration-info="state == 'draft'"
-                       decoration-muted="state == 'cancelled'"/>
+                       decoration-warning="state == 'done'"
+                       decoration-danger="state == 'cancelled'"/>
             </list>
         </field>
     </record>
@@ -56,47 +60,77 @@
         <field name="name">room.booking.form</field>
         <field name="model">room.booking</field>
         <field name="arch" type="xml">
-            <form string="Бронирование комнаты">
-                <header>
+            <form string="Бронирование комнаты" class="o_booking_form">
+                <header class="o_booking_header">
                     <button name="action_confirm" 
                             string="Подтвердить" 
                             type="object" 
-                            class="oe_highlight"
+                            class="oe_highlight btn-confirm"
+                            icon="fa-check-circle"
                             invisible="state != 'draft'"/>
 
                     <button name="action_done" 
                             string="Завершить" 
                             type="object"
+                            class="btn-done"
+                            icon="fa-flag-checkered"
                             invisible="state != 'active'"
                             groups="meeting_room_booking.group_meeting_room_manager"/>
 
                     <button name="action_cancel" 
                             string="Отменить" 
                             type="object"
+                            class="btn-cancel"
+                            icon="fa-times-circle"
+                            confirm="Вы уверены, что хотите отменить это бронирование?"
                             invisible="state in ['done', 'cancelled']"/>
                     
                     <button name="action_draft" 
                             string="Черновик" 
                             type="object"
+                            class="btn-draft"
+                            icon="fa-undo"
                             invisible="state != 'cancelled'"/>
 
-                    <field name="state" widget="statusbar" statusbar_visible="draft,active,done,cancelled"/>
+                    <field name="state" widget="statusbar" class="o_booking_statusbar" 
+                           statusbar_visible="draft,active,done,cancelled"/>
                 </header>
-                <sheet>
-                    <group>
-                        <group>
-                            <field name="name"/>
-                            <field name="room_id"/>
-                            <field name="partner_id"/>
+
+                <sheet class="o_booking_sheet">
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1 class="o_booking_sheet_title">
+                            <field name="name" class="o_booking_sheet_name_field" placeholder="Название встречи..."/>
+                        </h1>
+                    </div>
+
+                    <group class="o_booking_main_group">
+                        <group string="Основная информация" class="o_booking_group_left">
+                            <field name="room_id" class="o_booking_group_field" options="{'no_create': True}" placeholder="Выберите комнату..."/>
+
+                            <field name="partner_id" class="o_booking_group_field" string="Организатор" readonly="1"
+                                   groups="!meeting_room_booking.group_meeting_room_manager"/>
+                            
+                            <field name="partner_id" class="o_booking_group_field" string="Организатор" options="{'no_create': True, 'no_open': True}"
+                                   groups="meeting_room_booking.group_meeting_room_manager"/>
                         </group>
-                        <group>
-                            <field name="start_time"/>
-                            <field name="end_time"/>
-                            <field name="duration" widget="float_time"/>
+
+                        <group string="Время проведения" class="o_booking_group_right">
+                            <group class="o_booking_time_group">
+                                <field name="start_time" class="o_booking_group_field"/>
+                            </group>
+
+                            <group class="o_booking_time_group">
+                                <field name="end_time" class="o_booking_group_field"/>
+                            </group>
+                            
+                            <field name="duration" class="o_booking_group_field o_duration_field" widget="float_time"/>
                         </group>
                     </group>
+                    
                     <group>
-                        <field name="notes" placeholder="Комментарий..."/>
+                        <field name="notes" class="o_notes_field" nolabel="1"
+                               placeholder="Добавьте описание встречи, повестку дня или другие важные детали..."/>
                     </group>
                 </sheet>
             </form>
