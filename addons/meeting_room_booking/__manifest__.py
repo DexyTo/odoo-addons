@@ -26,8 +26,7 @@
     ],
     'assets': {
         'web.assets_backend': [
-            'meeting_room_booking/static/src/css/room_booking.css',
-            # 'meeting_room_booking/static/src/js/booking_form.js',
+            'meeting_room_booking/static/src/css/room_booking.css'
         ],
     },
     'application': True,

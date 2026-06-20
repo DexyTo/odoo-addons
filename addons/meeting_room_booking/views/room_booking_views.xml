@@ -60,7 +60,7 @@
         <field name="name">room.booking.form</field>
         <field name="model">room.booking</field>
         <field name="arch" type="xml">
-            <form string="Бронирование комнаты" class="o_booking_form">
+            <form string="Бронирование комнаты" class="o_booking_form" edit="state not in ['done', 'cancelled']">
                 <header class="o_booking_header">
                     <button name="action_confirm" 
                             string="Подтвердить" 
@@ -100,28 +100,29 @@
                     <div class="oe_title">
                         <label for="name" class="oe_edit_only"/>
                         <h1 class="o_booking_sheet_title">
-                            <field name="name" class="o_booking_sheet_name_field" placeholder="Название встречи..."/>
+                            <field name="name" class="o_booking_sheet_name_field" placeholder="Название встречи..." readonly="state in ['done', 'cancelled']"/>
                         </h1>
                     </div>
 
                     <group class="o_booking_main_group">
                         <group string="Основная информация" class="o_booking_group_left">
-                            <field name="room_id" class="o_booking_group_field" options="{'no_create': True}" placeholder="Выберите комнату..."/>
+                            <field name="room_id" class="o_booking_group_field" options="{'no_create': True}" placeholder="Выберите комнату..." readonly="state in ['done', 'cancelled']"/>
 
                             <field name="partner_id" class="o_booking_group_field" string="Организатор" readonly="1"
                                    groups="!meeting_room_booking.group_meeting_room_manager"/>
                             
                             <field name="partner_id" class="o_booking_group_field" string="Организатор" options="{'no_create': True, 'no_open': True}"
-                                   groups="meeting_room_booking.group_meeting_room_manager"/>
+                                   groups="meeting_room_booking.group_meeting_room_manager"
+                                   readonly="state in ['done', 'cancelled']"/>
                         </group>
 
                         <group string="Время проведения" class="o_booking_group_right">
                             <group class="o_booking_time_group">
-                                <field name="start_time" class="o_booking_group_field"/>
+                                <field name="start_time" class="o_booking_group_field" readonly="state in ['done', 'cancelled']"/>
                             </group>
 
                             <group class="o_booking_time_group">
-                                <field name="end_time" class="o_booking_group_field"/>
+                                <field name="end_time" class="o_booking_group_field" readonly="state in ['done', 'cancelled']"/>
                             </group>
                             
                             <field name="duration" class="o_booking_group_field o_duration_field" widget="float_time"/>
@@ -130,7 +131,8 @@
                     
                     <group>
                         <field name="notes" class="o_notes_field" nolabel="1"
-                               placeholder="Добавьте описание встречи, повестку дня или другие важные детали..."/>
+                               placeholder="Добавьте описание встречи, повестку дня или другие важные детали..."
+                               readonly="state in ['done', 'cancelled']"/>
                     </group>
                 </sheet>
             </form>
@@ -145,7 +147,8 @@
                       date_start="start_time" 
                       date_stop="end_time"
                       color="room_id"
-                      mode="week">
+                      mode="week"
+                      edit="0">
                 <field name="name"/>
                 <field name="room_id"/>
                 <field name="partner_id"/>
