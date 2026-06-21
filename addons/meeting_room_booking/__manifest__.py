@@ -1,7 +1,7 @@
 {
     'name': 'Бронирование переговорных',
     'version': '1.0',
-    'depends': ['base', 'calendar'],
+    'depends': ['base', 'mail', 'calendar'],
     'author': 'Белянин Иван',
     'category': 'Services',
     'description': """

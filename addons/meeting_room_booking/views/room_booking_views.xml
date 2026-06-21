@@ -83,14 +83,14 @@
                             class="btn-cancel"
                             icon="fa-times-circle"
                             confirm="Вы уверены, что хотите отменить это бронирование?"
-                            invisible="state in ['done', 'cancelled']"/>
+                            invisible="state != 'active'"/>
                     
                     <button name="action_draft" 
                             string="Черновик" 
                             type="object"
                             class="btn-draft"
                             icon="fa-undo"
-                            invisible="state != 'cancelled'"/>
+                            invisible="state != 'active'"/>
 
                     <field name="state" widget="statusbar" class="o_booking_statusbar" 
                            statusbar_visible="draft,active,done,cancelled"/>
@@ -114,6 +114,8 @@
                             <field name="partner_id" class="o_booking_group_field" string="Организатор" options="{'no_create': True, 'no_open': True}"
                                    groups="meeting_room_booking.group_meeting_room_manager"
                                    readonly="state in ['done', 'cancelled']"/>
+
+                            <field name="alarm_ids" widget="many2many_tags" placeholder="Выберите напоминания..."/>
                         </group>
 
                         <group string="Время проведения" class="o_booking_group_right">

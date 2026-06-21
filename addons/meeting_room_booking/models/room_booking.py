@@ -31,6 +31,19 @@ class RoomBooking(models.Model):
         store=True
     )
 
+    calendar_event_id = fields.Many2one(
+        'calendar.event',
+        string='Событие в календаре',
+        ondelete='set null',
+        copy=False,
+    )
+
+    alarm_ids = fields.Many2many(
+        'calendar.alarm',
+        string='Напоминание',
+        default=lambda self: self._get_default_alarm().ids,
+    )
+
     @api.depends('start_time', 'end_time')
     def _compute_duration(self):
         for booking in self:
@@ -66,6 +79,15 @@ class RoomBooking(models.Model):
                 if booking.start_time < min_start:
                     raise exceptions.ValidationError(
                         "Бронирование возможно не ранее чем через 10 минут от текущего времени!"
+                    )
+
+    @api.constrains('state')
+    def _check_active_state_time(self):
+        for booking in self:
+            if booking.state == 'active' and booking.start_time:
+                if booking.start_time <= fields.Datetime.now():
+                    raise exceptions.ValidationError(
+                        "Нельзя подтвердить бронирование, время начала которого уже прошло."
                     )
 
     @api.constrains('start_time', 'end_time')
@@ -122,6 +144,64 @@ class RoomBooking(models.Model):
                     f"Вы забронировали {total_hours:.1f} часов из 12 допустимых в эту неделю."
                 )
 
+    def _get_default_alarm(self):
+        alarm = self.env['calendar.alarm'].search([
+            ('alarm_type', '=', 'notification'),
+            ('duration', '=', 15),
+            ('interval', '=', 'minutes'),
+        ], limit=1)
+
+        if not alarm:
+            alarm = self.env['calendar.alarm'].create({
+                'name': 'Напоминание за 15 минут',
+                'alarm_type': 'notification',
+                'duration': 15,
+                'interval': 'minutes',
+            })
+        return alarm
+
+    def _create_calendar_event(self):
+        self.ensure_one()
+        if self.calendar_event_id:
+            return
+
+        partner_ids = []
+        if self.partner_id:
+            partner_ids.append(self.partner_id.id)
+
+        alarms = self.alarm_ids
+        event_vals = {
+            'name': f"Бронирование: {self.name}",
+            'start': self.start_time,
+            'stop': self.end_time,
+            'alarm_ids': [(6, 0, alarms.ids)],
+            'partner_ids': [(6, 0, partner_ids)],
+            'description': '',
+            'user_id': self.env.user.id,
+            'privacy': 'private',
+        }
+
+        event = self.env['calendar.event'].create(event_vals)
+        self.calendar_event_id = event.id
+
+    def _update_calendar_event(self):
+        self.ensure_one()
+        if not self.calendar_event_id:
+            return
+
+        self.calendar_event_id.write({
+            'start': self.start_time,
+            'stop': self.end_time,
+            'name': f"Бронирование: {self.name}",
+            'description': '',
+        })
+
+    def _delete_calendar_event(self):
+        self.ensure_one()
+        if self.calendar_event_id:
+            self.calendar_event_id.unlink()
+            self.calendar_event_id = False
+
     def copy(self, default=None):
         if default is None:
             default = {}
@@ -130,24 +210,38 @@ class RoomBooking(models.Model):
 
         return super().copy(default)
 
+    def write(self, vals):
+        result = super(RoomBooking, self).write(vals)
+
+        if 'start_time' in vals or 'end_time' in vals:
+            for booking in self:
+                if booking.state == 'active' and booking.calendar_event_id:
+                    booking._update_calendar_event()
+
+        return result
+
     def action_confirm(self):
         for record in self:
             record.state = 'active'
+            record._create_calendar_event()
         return True
 
     def action_done(self):
         for record in self:
             record.state = 'done'
+            record._delete_calendar_event()
         return True
 
     def action_cancel(self):
         for record in self:
             record.state = 'cancelled'
+            record._delete_calendar_event()
         return True
 
     def action_draft(self):
         for record in self:
             record.state = 'draft'
+            record._delete_calendar_event()
         return True
 
     def release_expired_bookings(self):
