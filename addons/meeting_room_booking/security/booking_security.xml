@@ -19,7 +19,6 @@
         <field name="comment">Имеет полный доступ ко всем бронированиям и настройкам</field>
     </record>
 
-
     <record id="room_booking_user_write_own_rule" model="ir.rule">
         <field name="name">Пользователь может редактировать/создавать только свои бронирования</field>
         <field name="model_id" ref="model_room_booking"/>
@@ -31,5 +30,15 @@
         <field name="perm_unlink" eval="False"/>
     </record>
 
+    <record id="room_booking_manager_all_rule" model="ir.rule">
+      <field name="name">Менеджер: полный доступ ко всем бронированиям</field>
+      <field name="model_id" ref="model_room_booking"/>
+      <field name="domain_force">[(1, '=', 1)]</field>
+      <field name="groups" eval="[(4, ref('group_meeting_room_manager'))]"/>
+      <field name="perm_read" eval="True"/>
+      <field name="perm_write" eval="True"/>
+      <field name="perm_create" eval="True"/>
+      <field name="perm_unlink" eval="True"/>
+  </record>
 
 </odoo>

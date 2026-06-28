@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 class TestBookingSecurity(TransactionCase):
 
     @classmethod
-    def setUp(cls):
+    def setUpClass(cls):
         super(TestBookingSecurity, cls).setUpClass()
         
         cls.location = cls.env['meeting.room.location'].create({
