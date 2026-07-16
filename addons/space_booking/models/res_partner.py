@@ -5,9 +5,15 @@ class ResPartner(models.Model):
     _inherit = 'res.partner'
     
     booking_ids = fields.One2many(
-        'room.booking',
+        'space.booking',
         'partner_id',
         string='Мои бронирования'
+    )
+
+    booking_count = fields.Integer(
+        string='Number of Bookings',
+        compute='_compute_booking_count',
+        help='Общее количество бронирований этого партнера'
     )
     
     total_bookings_hours_month = fields.Float(
@@ -19,7 +25,11 @@ class ResPartner(models.Model):
         compute='_compute_total_bookings_hours_week',
         string='Часы бронирования за неделю'
     )
-    
+
+    def _compute_booking_count(self):
+        for partner in self:
+            partner.booking_count = len(partner.booking_ids)
+
     @api.depends('booking_ids', 'booking_ids.start_time', 'booking_ids.end_time', 'booking_ids.state')
     def _compute_total_bookings_hours_month(self):
         for partner in self:
@@ -64,7 +74,7 @@ class ResPartner(models.Model):
         return {
             'name': 'Мои бронирования',
             'type': 'ir.actions.act_window',
-            'res_model': 'room.booking',
+            'res_model': 'space.booking',
             'view_mode': 'list,form,calendar',
             'domain': [('partner_id', '=', self.id)],
             'context': {'default_partner_id': self.id},

@@ -2,17 +2,15 @@ from odoo import models, fields, api, exceptions
 from datetime import timedelta
 
 
-class RoomBooking(models.Model):
-    _name = 'room.booking'
-    _description = 'Бронирование переговорной'
+class SpaceBooking(models.Model):
+    _name = 'space.booking'
+    _description = 'Бронирование помещений'
     _order = 'start_time desc'
 
-    name = fields.Char(string='Цель брони', required=True)
+    name = fields.Char(string='Цель бронирования', required=True)
     notes = fields.Text(string='Комментарий')
-    start_time = fields.Datetime(string='С', required=True, copy=False,
-                                 default=lambda self: fields.Datetime.now() + timedelta(minutes=15))
-    end_time = fields.Datetime(string='По', required=True, copy=False,
-                               default=lambda self: fields.Datetime.now() + timedelta(hours=1))
+    start_time = fields.Datetime(string='С', required=True)
+    end_time = fields.Datetime(string='По', required=True)
 
     state = fields.Selection([
         ('draft', 'Черновик'),
@@ -21,7 +19,8 @@ class RoomBooking(models.Model):
         ('cancelled', 'Отменено'),
     ], string='Статус', required=True, copy=False, default='draft')
 
-    room_id = fields.Many2one('meeting.room', string='Комната', required=True)
+    space_id = fields.Many2one(
+        'space', string='Помещение', required=True, ondelete='restrict')
     partner_id = fields.Many2one('res.partner', string='Организатор', required=True, copy=False,
                                  default=lambda self: self.env.user.partner_id)
 
@@ -31,17 +30,23 @@ class RoomBooking(models.Model):
         store=True
     )
 
+    display_name = fields.Char(
+        compute='_compute_display_name',
+        store=False
+    )
+
+
     calendar_event_id = fields.Many2one(
         'calendar.event',
         string='Событие в календаре',
         ondelete='set null',
-        copy=False,
+        copy=False
     )
 
     alarm_ids = fields.Many2many(
         'calendar.alarm',
         string='Напоминание',
-        default=lambda self: self._get_default_alarm().ids,
+        default=lambda self: self._get_default_alarm().ids
     )
 
     @api.depends('start_time', 'end_time')
@@ -53,7 +58,7 @@ class RoomBooking(models.Model):
             else:
                 booking.duration = 0.0
 
-    @api.constrains('room_id', 'start_time', 'end_time', 'state')
+    @api.constrains('space_id', 'start_time', 'end_time', 'state')
     def _check_no_overlap(self):
         active_bookings = self.filtered(lambda b: b.state == 'active')
         if not active_bookings:
@@ -61,15 +66,23 @@ class RoomBooking(models.Model):
 
         for booking in active_bookings:
             domain = [
-                ('room_id', '=', booking.room_id.id),
+                ('space_id', '=', booking.space_id.id),
                 ('state', 'in', ['active']),
                 ('id', '!=', booking.id),
                 ('start_time', '<', booking.end_time),
                 ('end_time', '>', booking.start_time),
             ]
+            # Быстрая проверка на наличие конфликта
             if self.search_count(domain, limit=1) > 0:
+                # Только теперь получаем все конфликтующие записи для деталей
+                conflicts = self.search(domain)
+                conflict_details = "\n".join(
+                    f"Бронь #{c.id} с {c.start_time} по {c.end_time}" for c in conflicts
+                )
                 raise exceptions.ValidationError(
-                    "Время пересекается с другим бронированием!")
+                    "Помещение уже забронировано для выбранного времени!\n"
+                    "Конфликт с:\n" + conflict_details
+                )
 
     @api.constrains('start_time')
     def _check_start_time_future(self):
@@ -102,47 +115,15 @@ class RoomBooking(models.Model):
                 duration_minutes = (booking.end_time -
                                     booking.start_time).total_seconds() / 60
 
-                if duration_minutes < 15:
+                if duration_minutes < 10:
                     raise exceptions.ValidationError(
-                        "Минимальная длительность бронирования — 15 минут!"
+                        "Минимальная длительность бронирования — 10 минут!"
                     )
 
-                if duration_minutes > 240:
+                if duration_minutes > 1440:
                     raise exceptions.ValidationError(
-                        "Максимальная длительность бронирования — 4 часа!"
+                        "Максимальная длительность бронирования — 24 часа!"
                     )
-
-    @api.constrains('partner_id', 'start_time', 'state')
-    def _check_weekly_booking_limit(self):
-        for booking in self:
-            if booking.state not in ['active', 'done']:
-                continue
-
-            # Определяем текущую неделю для бронирования
-            booking_week_start = booking.start_time - \
-                timedelta(days=booking.start_time.weekday())
-            booking_week_start = booking_week_start.replace(
-                hour=0, minute=0, second=0, microsecond=0)
-            booking_week_end = booking_week_start + timedelta(days=7)
-
-            # Находим все бронирования пользователя в эту неделю
-            week_bookings = self.search([
-                ('partner_id', '=', booking.partner_id.id),
-                ('id', '!=', booking.id),
-                ('state', 'in', ['active', 'done']),
-                ('start_time', '>=', booking_week_start),
-                ('start_time', '<', booking_week_end),
-            ])
-
-            # Суммируем часы
-            total_hours = sum(week_bookings.mapped(
-                'duration')) + booking.duration
-
-            if total_hours > 12:
-                raise exceptions.ValidationError(
-                    f"Превышен недельный лимит бронирования! "
-                    f"Вы забронировали {total_hours:.1f} часов из 12 допустимых в эту неделю."
-                )
 
     def _get_default_alarm(self):
         alarm = self.env['calendar.alarm'].search([
@@ -211,7 +192,7 @@ class RoomBooking(models.Model):
         return super().copy(default)
 
     def write(self, vals):
-        result = super(RoomBooking, self).write(vals)
+        result = super(SpaceBooking, self).write(vals)
 
         if 'start_time' in vals or 'end_time' in vals:
             for booking in self:
@@ -255,3 +236,11 @@ class RoomBooking(models.Model):
             expired_bookings.write({'state': 'done'})
 
         return True
+    
+    @api.depends('name', 'space_id.name')
+    def _compute_display_name(self):
+        for booking in self:
+            booking.display_name = f"{booking.name} ({booking.space_id.name or ''})"
+    
+    def name_get(self):
+        return [(booking.id, booking.display_name) for booking in self]

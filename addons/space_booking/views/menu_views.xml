@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_space_booking_root"
+              name="Бронирование помещений"
+              sequence="50"
+              web_icon="space_booking,static/description/icon.png"/>
+
+    <menuitem id="menu_space_booking_bookings"
+              name="Бронирования"
+              parent="menu_space_booking_root"
+              sequence="10"/>
+
+    <menuitem id="menu_space_booking_my_bookings"
+              name="Мои бронирования"
+              parent="menu_space_booking_bookings"
+              action="action_my_space_bookings"
+              sequence="10"/>
+    
+    <menuitem id="menu_space_booking_all_bookings"
+              name="Все бронирования"
+              parent="menu_space_booking_bookings"
+              action="action_space_booking"
+              sequence="20"/>
+    
+    <menuitem id="menu_space_booking_calendar"
+              name="Календарь"
+              parent="menu_space_booking_bookings"
+              action="action_space_booking_calendar"
+              sequence="30"/>
+
+    <menuitem id="menu_space_booking_spaces"
+              name="Помещения"
+              parent="menu_space_booking_root"
+              sequence="20"/>
+    
+    <menuitem id="menu_space_booking_all_spaces"
+              name="Все помещения"
+              parent="menu_space_booking_spaces"
+              action="action_space"
+              sequence="10"/>
+    
+    <menuitem id="menu_space_booking_locations"
+              name="Местоположения"
+              parent="menu_space_booking_spaces"
+              action="action_space_location"
+              sequence="20"/>
+</odoo>

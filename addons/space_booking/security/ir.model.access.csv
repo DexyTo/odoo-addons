@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_space_location_user,space.location.user,model_space_location,base.group_user,1,0,0,0
+access_space_location_manager,space.location.manager,model_space_location,group_space_booking_manager,1,1,1,1
+access_space_user,space.user,model_space,base.group_user,1,0,0,0
+access_space_manager,space.manager,model_space,group_space_booking_manager,1,1,1,1
+access_space_booking_user,space.booking.user,model_space_booking,base.group_user,1,1,1,0
+access_space_booking_manager,space.booking.manager,model_space_booking,group_space_booking_manager,1,1,1,1

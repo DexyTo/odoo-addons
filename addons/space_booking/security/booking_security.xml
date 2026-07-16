@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <record id="module_category_meeting_room" model="ir.module.category">
-        <field name="name">Бронирование переговорных</field>
-        <field name="description">Управление переговорными комнатами</field>
+    <record id="module_category_space_booking" model="ir.module.category">
+        <field name="name">Бронирование помещений</field>
+        <field name="description">Управление броннированиям помещений</field>
         <field name="sequence">10</field>
     </record>
 
     <record id="res_groups_privilege_booking" model="res.groups.privilege">
         <field name="name">Бронирования</field>
-        <field name="category_id" ref="module_category_meeting_room"/>
+        <field name="category_id" ref="module_category_space_booking"/>
     </record>
 
-    <record id="group_meeting_room_manager" model="res.groups">
+    <record id="group_space_booking_manager" model="res.groups">
         <field name="name">Менеджер</field>
         <field name="privilege_id" ref="res_groups_privilege_booking"/>
         <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
         <field name="comment">Имеет полный доступ ко всем бронированиям и настройкам</field>
     </record>
 
-    <record id="room_booking_user_write_own_rule" model="ir.rule">
+    <record id="space_booking_user_write_own_rule" model="ir.rule">
         <field name="name">Пользователь может редактировать/создавать только свои бронирования</field>
-        <field name="model_id" ref="model_room_booking"/>
+        <field name="model_id" ref="model_space_booking"/>
         <field name="domain_force">[('partner_id.user_ids', 'in', [user.id])]</field>
         <field name="groups" eval="[(4, ref('base.group_user'))]"/>
         <field name="perm_read" eval="False"/>
@@ -30,11 +30,11 @@
         <field name="perm_unlink" eval="False"/>
     </record>
 
-    <record id="room_booking_manager_all_rule" model="ir.rule">
+    <record id="space_booking_manager_all_rule" model="ir.rule">
       <field name="name">Менеджер: полный доступ ко всем бронированиям</field>
-      <field name="model_id" ref="model_room_booking"/>
+      <field name="model_id" ref="model_space_booking"/>
       <field name="domain_force">[(1, '=', 1)]</field>
-      <field name="groups" eval="[(4, ref('group_meeting_room_manager'))]"/>
+      <field name="groups" eval="[(4, ref('group_space_booking_manager'))]"/>
       <field name="perm_read" eval="True"/>
       <field name="perm_write" eval="True"/>
       <field name="perm_create" eval="True"/>

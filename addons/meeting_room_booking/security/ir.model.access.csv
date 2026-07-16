@@ -1,7 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_meeting_location_user,meeting.location.user,model_meeting_room_location,base.group_user,1,0,0,0
-access_meeting_location_manager,meeting.location.manager,model_meeting_room_location,group_meeting_room_manager,1,1,1,1
-access_meeting_room_user,meeting.room.user,model_meeting_room,base.group_user,1,0,0,0
-access_meeting_room_manager,meeting.room.manager,model_meeting_room,group_meeting_room_manager,1,1,1,1
-access_room_booking_user,room.booking.user,model_room_booking,base.group_user,1,1,1,0
-access_room_booking_manager,room.booking.manager,model_room_booking,group_meeting_room_manager,1,1,1,1

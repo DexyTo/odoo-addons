@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <record id="view_room_booking_list" model="ir.ui.view">
-        <field name="name">room.booking.list</field>
-        <field name="model">room.booking</field>
+    <record id="view_space_booking_list" model="ir.ui.view">
+        <field name="name">space.booking.list</field>
+        <field name="model">space.booking</field>
         <field name="arch" type="xml">
-            <list string="Бронирования комнат" class="o_booking_list" 
+            <list string="Бронирования помещений" class="o_booking_list" 
                   decoration-success="state == 'active'"
                   decoration-muted="state == 'cancelled'"
                   decoration-info="state == 'draft'"
                   decoration-bf="state == 'active'">
 
                 <field name="name"/>
-                <field name="room_id"/>
+                <field name="space_id"/>
                 <field name="partner_id"/>
                 <field name="start_time"/>
                 <field name="end_time"/>
@@ -27,28 +27,36 @@
         </field>
     </record>
 
-    <record id="view_room_booking_search" model="ir.ui.view">
-      <field name="name">room.booking.search</field>
-      <field name="model">room.booking</field>
+    <record id="view_space_booking_search" model="ir.ui.view">
+      <field name="name">space.booking.search</field>
+      <field name="model">space.booking</field>
       <field name="arch" type="xml">
           <search>
-              <field name="name"/>
-              <field name="room_id"/>
+              <field name="name" filter_domain="[('name', 'ilike', self)]"/>
+              <field name="space_id"/>
               <field name="partner_id"/>
 
               <filter string="Мои бронирования" name="my_bookings"
                       domain="[('partner_id.user_ids', 'in', [uid])]"/>
               
-              <filter string="Активные" name="filter_active"
+              <filter string="Активные" name="active"
                       domain="[('state', '=', 'active')]"/>
-              
-              <filter string="Черновики" name="filter_draft"
+              <filter string="Черновики" name="draft"
                       domain="[('state', '=', 'draft')]"/>
               
               <separator/>
+
+              <filter string="Предстоящие" name="upcoming"
+                      domain="[('start_time', '&gt;=', 'now'),
+                              ('state', 'in', ['draft', 'active'])]"/>
+
+              <filter string="Прошедшие" name="past"
+                      domain="[('end_time', '&lt;', 'now')]"/>
+
+              <separator/>
               
               <group>
-                  <filter string="Комната" name="group_room" context="{'group_by': 'room_id'}"/>
+                  <filter string="Помещение" name="group_space" context="{'group_by': 'space_id'}"/>
                   <filter string="Организатор" name="group_partner" context="{'group_by': 'partner_id'}"/>
                   <filter string="Статус" name="group_state" context="{'group_by': 'state'}"/>
               </group>
@@ -56,11 +64,11 @@
       </field>
     </record>
 
-    <record id="view_room_booking_form" model="ir.ui.view">
-        <field name="name">room.booking.form</field>
-        <field name="model">room.booking</field>
+    <record id="view_space_booking_form" model="ir.ui.view">
+        <field name="name">space.booking.form</field>
+        <field name="model">space.booking</field>
         <field name="arch" type="xml">
-            <form string="Бронирование комнаты" class="o_booking_form" edit="state not in ['done', 'cancelled']">
+            <form string="Бронирование помещения" class="o_booking_form" edit="state not in ['done', 'cancelled']">
                 <header class="o_booking_header">
                     <button name="action_confirm" 
                             string="Подтвердить" 
@@ -75,7 +83,7 @@
                             class="btn-done"
                             icon="fa-flag-checkered"
                             invisible="state != 'active'"
-                            groups="meeting_room_booking.group_meeting_room_manager"/>
+                            groups="space_booking.group_space_booking_manager"/>
 
                     <button name="action_cancel" 
                             string="Отменить" 
@@ -100,19 +108,19 @@
                     <div class="oe_title">
                         <label for="name" class="oe_edit_only"/>
                         <h1 class="o_booking_sheet_title">
-                            <field name="name" class="o_booking_sheet_name_field" placeholder="Название встречи..." readonly="state in ['done', 'cancelled']"/>
+                            <field name="name" class="o_booking_sheet_name_field" placeholder="Например, совещание..." readonly="state in ['done', 'cancelled']"/>
                         </h1>
                     </div>
 
                     <group class="o_booking_main_group">
                         <group string="Основная информация" class="o_booking_group_left">
-                            <field name="room_id" class="o_booking_group_field" options="{'no_create': True}" placeholder="Выберите комнату..." readonly="state in ['done', 'cancelled']"/>
+                            <field name="space_id" class="o_booking_group_field" options="{'no_create': True}" placeholder="Выберите помещение" readonly="state in ['done', 'cancelled']"/>
 
                             <field name="partner_id" class="o_booking_group_field" string="Организатор" readonly="1"
-                                   groups="!meeting_room_booking.group_meeting_room_manager"/>
+                                   groups="!space_booking.group_space_booking_manager"/>
                             
                             <field name="partner_id" class="o_booking_group_field" string="Организатор" options="{'no_create': True, 'no_open': True}"
-                                   groups="meeting_room_booking.group_meeting_room_manager"
+                                   groups="space_booking.group_space_booking_manager"
                                    readonly="state in ['done', 'cancelled']"/>
 
                             <field name="alarm_ids" widget="many2many_tags" placeholder="Выберите напоминания..."/>
@@ -141,27 +149,68 @@
         </field>
     </record>
 
-    <record id="view_room_booking_calendar" model="ir.ui.view">
-        <field name="name">room.booking.calendar</field>
-        <field name="model">room.booking</field>
+    <record id="view_space_booking_graph" model="ir.ui.view">
+        <field name="name">space.booking.graph</field>
+        <field name="model">space.booking</field>
+        <field name="arch" type="xml">
+            <graph string="Статистика по бронированию помещений" type="bar" stacked="1">
+                <field name="space_id"/>
+                <field name="duration" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_space_booking_pivot" model="ir.ui.view">
+        <field name="name">space.booking.pivot</field>
+        <field name="model">space.booking</field>
+        <field name="arch" type="xml">
+            <pivot string="Анализ количества забронированных помещений">
+                <field name="space_id" type="row"/>
+                <field name="start_time" interval="month" type="col"/>
+                <field name="duration" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_space_booking_calendar" model="ir.ui.view">
+        <field name="name">space.booking.calendar</field>
+        <field name="model">space.booking</field>
         <field name="arch" type="xml">
             <calendar string="Календарь бронирований" 
                       date_start="start_time" 
                       date_stop="end_time"
-                      color="room_id"
+                      color="space_id"
                       mode="week"
                       edit="0">
                 <field name="name"/>
-                <field name="room_id"/>
+                <field name="space_id"/>
                 <field name="partner_id"/>
             </calendar>
         </field>
     </record>
 
-    <record id="action_room_booking" model="ir.actions.act_window">
-        <field name="name">Бронирование комнат</field>
-        <field name="res_model">room.booking</field>
+    <record id="action_space_booking" model="ir.actions.act_window">
+        <field name="name">Бронирования</field>
+        <field name="res_model">space.booking</field>
+        <field name="view_mode">list,form,calendar,graph,pivot</field>
+        <field name="context">{'search_default_upcoming': 1}</field>
+    </record>
+
+    <record id="action_my_space_bookings" model="ir.actions.act_window">
+        <field name="name">Мои бронирования</field>
+        <field name="res_model">space.booking</field>
         <field name="view_mode">list,form,calendar</field>
+        <field name="context">{
+            'search_default_my_bookings': 1,
+            'search_default_upcoming': 1,
+        }</field>
+    </record>
+
+    <record id="action_space_booking_calendar" model="ir.actions.act_window">
+        <field name="name">Календарь бронирования</field>
+        <field name="res_model">space.booking</field>
+        <field name="view_mode">calendar,list,form</field>
+        <field name="context">{'search_default_active': 1}</field>
     </record>
 
 </odoo>
