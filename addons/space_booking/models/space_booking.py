@@ -64,6 +64,11 @@ class SpaceBooking(models.Model):
         if not active_bookings:
             return
 
+        # Вспомогательная функция для форматирования даты/времени в часовом поясе пользователя
+        def _format_local_dt(record, dt):
+            local_dt = fields.Datetime.context_timestamp(record, dt)
+            return local_dt.strftime('%d.%m.%Y %H:%M')
+
         for booking in active_bookings:
             domain = [
                 ('space_id', '=', booking.space_id.id),
@@ -72,12 +77,14 @@ class SpaceBooking(models.Model):
                 ('start_time', '<', booking.end_time),
                 ('end_time', '>', booking.start_time),
             ]
-            # Быстрая проверка на наличие конфликта
             if self.search_count(domain, limit=1) > 0:
-                # Только теперь получаем все конфликтующие записи для деталей
                 conflicts = self.search(domain)
                 conflict_details = "\n".join(
-                    f"Бронь #{c.id} с {c.start_time} по {c.end_time}" for c in conflicts
+                    "Бронь #{} с {} по {}".format(
+                        c.id,
+                        _format_local_dt(booking, c.start_time),
+                        _format_local_dt(booking, c.end_time)
+                    ) for c in conflicts
                 )
                 raise exceptions.ValidationError(
                     "Помещение уже забронировано для выбранного времени!\n"
