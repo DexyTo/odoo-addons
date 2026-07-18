@@ -12,6 +12,6 @@ class CalendarEvent(models.Model):
                 )
                 if booking:
                     raise exceptions.ValidationError(
-                        "Нельзя изменить дату события, связанного с бронью помещения, в этом календаре.\nИзменяйте дату через саму бронь."
+                        "Изменить дату события можно только при изменении даты бронирования."
                     )
         return super().write(vals)
