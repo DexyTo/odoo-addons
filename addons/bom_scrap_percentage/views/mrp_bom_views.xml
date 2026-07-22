@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="mrp_bom_form_view_scrap_percentage" model="ir.ui.view">
+            <field name="name">mrp.bom.form.view.scrap.percentage</field>
+            <field name="model">mrp.bom</field>
+            <field name="inherit_id" ref="mrp.mrp_bom_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='bom_line_ids']//list//field[@name='product_uom_id']" position="after">
+                    <field name="scrap_percentage" optional="show" decoration-danger="scrap_percentage &lt; 0"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
